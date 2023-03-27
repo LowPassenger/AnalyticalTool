@@ -1,6 +1,6 @@
-package org.analyticaltool.util;
+package org.analyticaltool.utils;
 
-public class RegexMatchers {
+public class Regex {
     public static final String LINE_TYPE_REGEX = "[CD]";
     public static final String SERVICES_TYPE_REGEX =
             "[\\s]{1}(((([1-9][0]?)|[\\*]?))|((([1-9][0]?)|[\\*]?)[\\.]{1}([1-3]|\\*?)|\\*?))";
