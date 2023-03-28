@@ -7,7 +7,7 @@ import java.io.IOException;
 import org.analyticaltool.Main;
 import org.analyticaltool.service.Distributor;
 import org.analyticaltool.service.Validator;
-import org.analyticaltool.utils.AppConstants;
+import org.analyticaltool.utils.constants.AppConstants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

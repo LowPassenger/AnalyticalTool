@@ -3,7 +3,7 @@ package org.analyticaltool;
 import java.io.File;
 import java.util.Scanner;
 import org.analyticaltool.file.ReportReader;
-import org.analyticaltool.utils.AppConstants;
+import org.analyticaltool.utils.constants.AppConstants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
