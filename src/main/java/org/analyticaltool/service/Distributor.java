@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 public class Distributor {
     private static final Logger log = LogManager.getLogger(Distributor.class);
     private final Validator validator = new Validator();
+    private final Storage storage = new Storage();
     public int lineRecognize(String line, int lineCounter) {
         if (!validator.regexValidation(line)) {
             log.warn(AppErrorConstants.REGEX_VALIDATION_ERROR + lineCounter);
@@ -64,11 +65,12 @@ public class Distributor {
 
         if (dataForParsing[AppParseConstants.DATA_IN_LINE_TYPE]
                 .equals(AppParseConstants.DATA_TYPE_WAITING_TIMELINE)) {
-            new Storage().getWaitingTimeLines().add(dataForParsing);
+            storage.getWaitingTimeLines().add(dataForParsing);
+        } else {
+            Map<String[], Integer> query = new HashMap<>();
+            query.put(dataForParsing, dataForParsing.length);
+            storage.getQueries().add(query);
         }
-        Map<String[], Integer> query = new HashMap<>();
-        query.put(dataForParsing, dataForParsing.length);
-        new Storage().getQueries().add(query);
         return AppConstants.NORMAL_EXIT_STATUS;
     }
 }

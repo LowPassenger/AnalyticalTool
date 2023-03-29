@@ -33,7 +33,7 @@ public class ReportReader {
                 output = distributor.lineRecognize(lineFromFile, lineNumber);
             }
         } catch (IOException e) {
-            log.error("The read from file {} error is occurred!", innerFileName);
+            log.error("The read from file {} error is occurred! Stacktrace: " + e, innerFileName);
             Main.appComplete(AppConstants.WRONG_INPUT_DATA_EXIT_STATUS);
         }
         return output;

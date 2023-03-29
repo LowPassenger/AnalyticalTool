@@ -12,7 +12,7 @@ public class Storage {
         return waitingTimeLines;
     }
 
-    public List<Map<String[], Integer>> getQueries() {
+    public Map<String[], Integer> getQueries() {
         return queries;
     }
 }
