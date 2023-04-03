@@ -4,8 +4,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.analyticaltool.utils.constants.AppConstants;
 import org.analyticaltool.utils.Regex;
+import org.analyticaltool.utils.constants.AppConstants;
 import org.analyticaltool.utils.constants.AppDateConstants;
 import org.analyticaltool.utils.constants.AppParseConstants;
 import org.analyticaltool.utils.constants.AppQuestionBlockConstants;
@@ -19,7 +19,7 @@ public class Validator {
 
     public boolean fileIsValid(String firstLine) {
         try {
-            int linesNumber= Integer.parseInt(firstLine);
+            int linesNumber = Integer.parseInt(firstLine);
             if (linesNumber <= 0 || linesNumber > AppConstants.REPORT_FILE_MAX_RECORDS_NUMBER) {
                 log.warn("The report file records number is wrong!");
                 return false;
@@ -38,7 +38,9 @@ public class Validator {
     }
 
     public boolean dataExtractionValidation(String operationType, int lineBlocksQuantity) {
-        if (operationType == null || operationType.isEmpty()) { return false; }
+        if (operationType == null || operationType.isEmpty()) {
+            return false;
+        }
         return ((operationType.equals(AppParseConstants.DATA_TYPE_WAITING_TIMELINE)
                 & lineBlocksQuantity == AppParseConstants.DATA_BLOCKS_IN_WAITING_TIMELINE_QUANTITY)
                 || (operationType.equals(AppParseConstants.DATA_TYPE_QUERY)
@@ -46,13 +48,18 @@ public class Validator {
     }
 
     public boolean serviceAndVariationsValidation(String serviceBlock) {
-        if (serviceBlock == null || serviceBlock.isEmpty()) { return false; }
+        if (serviceBlock == null || serviceBlock.isEmpty()) {
+            return false;
+        }
 
         if (serviceBlock.contains(AppParseConstants.CATEGORIES_DELIMITER)) {
             String[] serviceVariations = serviceBlock
-                    .split(AppParseConstants.CATEGORIES_DELIMITER);
-            if (serviceVariations.length > AppServiceBlockConstants
-                    .SERVICE_FULL_INFORMATION_SLOTS_QUANTITY) { return false; }
+                    .split(Pattern.quote(AppParseConstants.CATEGORIES_DELIMITER));
+            if (serviceVariations.length == 0
+                    || serviceVariations.length > AppServiceBlockConstants
+                    .SERVICE_FULL_INFORMATION_SLOTS_QUANTITY) {
+                return false;
+            }
 
             String serviceId = serviceVariations[AppServiceBlockConstants
                     .SERVICE_ID_IN_BLOCK_POSITION];
@@ -63,33 +70,42 @@ public class Validator {
                     || Integer.parseInt(serviceId) < AppServiceBlockConstants
                     .SERVICE_ID_START_NUMBER
                     || Integer.parseInt(serviceId) > AppServiceBlockConstants
-                    .SERVICE_ID_END_NUMBER)
-            { return false; }
+                    .SERVICE_ID_END_NUMBER) {
+                return false;
+            }
 
-            if (serviceVariationId == null ||serviceVariationId.isEmpty()
+            if (serviceVariationId == null || serviceVariationId.isEmpty()
                     || isNotNumberOrAsterisk(serviceVariationId)
                     || Integer.parseInt(serviceVariationId) < AppServiceBlockConstants
                     .SERVICE_VARIATION_ID_START_NUMBER
                     || Integer.parseInt(serviceVariationId) > AppServiceBlockConstants
-                    .SERVICE_VARIATION_ID_END_NUMBER)
-            { return false; }
+                    .SERVICE_VARIATION_ID_END_NUMBER) {
+                return false;
+            }
+        } else {
 
-            if (isNotNumberOrAsterisk(serviceBlock)
-                    || Integer.parseInt(serviceBlock)
-                    < AppServiceBlockConstants.SERVICE_ID_START_NUMBER
-                    || Integer.parseInt(serviceBlock)
-                    > AppServiceBlockConstants.SERVICE_ID_END_NUMBER)
-            { return  false; }
+            return !isNotNumberOrAsterisk(serviceBlock)
+                    || (Integer.parseInt(serviceBlock)
+                    >= AppServiceBlockConstants.SERVICE_ID_START_NUMBER
+                    && Integer.parseInt(serviceBlock)
+                    <= AppServiceBlockConstants.SERVICE_ID_END_NUMBER);
         }
         return true;
     }
+
     public boolean questionAndCategoriesValidation(String questionString) {
-        if (questionString == null || questionString.isEmpty()) { return false; }
+        if (questionString == null || questionString.isEmpty()) {
+            return false;
+        }
 
         if (questionString.contains(AppParseConstants.CATEGORIES_DELIMITER)) {
-            String[] questionVariations = questionString.split(AppParseConstants.CATEGORIES_DELIMITER);
-            if (questionVariations.length > AppQuestionBlockConstants
-                    .QUESTION_FULL_INFORMATION_SLOTS_QUANTITY) { return false; }
+            String[] questionVariations = questionString.split(Pattern.quote(AppParseConstants
+                    .CATEGORIES_DELIMITER));
+            if (questionVariations.length == 0
+                    || questionVariations.length > AppQuestionBlockConstants
+                    .QUESTION_FULL_INFORMATION_SLOTS_QUANTITY) {
+                return false;
+            }
 
             String questionTypeId = questionVariations[AppQuestionBlockConstants
                     .QUESTION_TYPE_ID_IN_BLOCK_POSITION];
@@ -104,8 +120,9 @@ public class Validator {
                         || Integer.parseInt(questionSubcategoryId) < AppQuestionBlockConstants
                         .QUESTION_SUBCATEGORY_ID_START_NUMBER
                         || Integer.parseInt(questionSubcategoryId) > AppQuestionBlockConstants
-                        .QUESTION_SUBCATEGORY_ID_END_NUMBER)
-                { return false; }
+                        .QUESTION_SUBCATEGORY_ID_END_NUMBER) {
+                    return false;
+                }
             }
 
             if (questionTypeId == null || questionTypeId.isEmpty()
@@ -113,61 +130,74 @@ public class Validator {
                     || Integer.parseInt(questionTypeId) < AppQuestionBlockConstants
                     .QUESTION_TYPE_ID_START_NUMBER
                     || Integer.parseInt(questionTypeId) > AppQuestionBlockConstants
-                    .QUESTION_TYPE_ID_END_NUMBER)
-            { return false; }
+                    .QUESTION_TYPE_ID_END_NUMBER) {
+                return false;
+            }
 
             if (questionCategoryId == null || questionCategoryId.isEmpty()
                     || isNotNumberOrAsterisk(questionCategoryId)
                     || Integer.parseInt(questionCategoryId) < AppQuestionBlockConstants
                     .QUESTION_CATEGORY_ID_START_NUMBER
                     || Integer.parseInt(questionCategoryId) > AppQuestionBlockConstants
-                    .QUESTION_CATEGORY_ID_END_NUMBER)
-            { return false; }
-
-            if (isNotNumberOrAsterisk(questionString)
-                    || Integer.parseInt(questionString)
-                    < AppQuestionBlockConstants.QUESTION_TYPE_ID_START_NUMBER
-                    || Integer.parseInt(questionString)
-                    > AppQuestionBlockConstants.QUESTION_TYPE_ID_END_NUMBER)
-            { return  false; }
+                    .QUESTION_CATEGORY_ID_END_NUMBER) {
+                return false;
+            }
+        } else {
+            return !isNotNumberOrAsterisk(questionString)
+                    || (Integer.parseInt(questionString)
+                    >= AppQuestionBlockConstants.QUESTION_TYPE_ID_START_NUMBER
+                    && Integer.parseInt(questionString)
+                    <= AppQuestionBlockConstants.QUESTION_TYPE_ID_END_NUMBER);
         }
         return true;
     }
 
     public boolean responseTypeValidator(String responseType) {
-        if (responseType == null || responseType.isEmpty()) { return  false; }
+        if (responseType == null || responseType.isEmpty()) {
+            return false;
+        }
         return (responseType.equals(AppParseConstants.RESPONSE_TIME_FIRST_ANSWER)
                 || responseType.equals(AppParseConstants.RESPONSE_TIME_NEXT_ANSWER));
     }
 
     public boolean dateValidation(String dateBlock) {
-        if (dateBlock == null || dateBlock.isEmpty()) { return  false; }
+        if (dateBlock == null || dateBlock.isEmpty()) {
+            return false;
+        }
 
         if (dateBlock.contains(AppParseConstants.DATE_DELIMITER)) {
             String[] datePeriod = dateBlock.split(AppParseConstants.DATE_DELIMITER);
             if (datePeriod.length > AppDateConstants
-                    .DATE_FULL_INFORMATION_SLOTS_QUANTITY) { return  false; }
-            for (String date : datePeriod) {
-                if (date == null || date.isEmpty() || isNotValidDate(date)) { return  false; }
+                    .DATE_FULL_INFORMATION_SLOTS_QUANTITY) {
+                return false;
             }
+            for (String date : datePeriod) {
+                if (date == null || date.isEmpty() || isNotValidDate(date)) {
+                    return false;
+                }
+            }
+        } else {
+            return !isNotValidDate(dateBlock);
         }
-
-        if (isNotValidDate(dateBlock)) { return  false; }
         return true;
     }
 
     public boolean waitingTimeValidation(String waitingTime) {
-        if (waitingTime == null || waitingTime.isEmpty()) { return  false; }
+        if (waitingTime == null || waitingTime.isEmpty()) {
+            return false;
+        }
         return ((!waitingTime.equals(AppParseConstants.SPECIAL_CHARACTER)
-                & !isNotNumberOrAsterisk(waitingTime)) &
-                !(Integer.parseInt(waitingTime)
-                        < AppWaitingTimeConstants.MIN_WAITING_TIME_MINUTES)
+                & !isNotNumberOrAsterisk(waitingTime))
+                & !((Integer.parseInt(waitingTime)
+                < AppWaitingTimeConstants.MIN_WAITING_TIME_MINUTES)
                 || (Integer.parseInt(waitingTime)
-                > AppWaitingTimeConstants.MAX_WAITING_TIME_MINUTES));
+                > AppWaitingTimeConstants.MAX_WAITING_TIME_MINUTES)));
     }
 
     private boolean isNotNumberOrAsterisk(String value) {
-        if (value.equals(AppParseConstants.SPECIAL_CHARACTER)) { return false; }
+        if (value.equals(AppParseConstants.SPECIAL_CHARACTER)) {
+            return false;
+        }
         try {
             Integer.parseInt(value);
             return false;
@@ -184,6 +214,6 @@ public class Validator {
             return true;
         }
         return (dateFromString == null || dateFromString.isBefore(AppDateConstants.START_DATE)
-                || dateFromString.isAfter(AppDateConstants.END_DATE));
+                | dateFromString.isAfter(AppDateConstants.END_DATE));
     }
 }

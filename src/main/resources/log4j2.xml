@@ -8,7 +8,7 @@
         </File>
     </Appenders>
     <Loggers>
-        <Logger name="org.analyticaltool" level="info" additivity="true">
+        <Logger name="org.analyticaltool" level="info" additivity="false">
             <AppenderRef ref="LogToFile"/>
         </Logger>
         <Root level="error">

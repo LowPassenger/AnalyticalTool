@@ -4,10 +4,11 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import org.analyticaltool.Main;
 import org.analyticaltool.service.Distributor;
 import org.analyticaltool.service.Validator;
+import org.analyticaltool.utils.Storage;
 import org.analyticaltool.utils.constants.AppConstants;
+import org.analyticaltool.utils.constants.AppParseConstants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -16,25 +17,32 @@ public class ReportReader {
     private final Validator validator = new Validator();
     private final Distributor distributor = new Distributor();
 
-    public int readInnerReportFile(String innerFileName) {
+    public int readInnerReportFile(String innerFileName, Storage storage) {
         int output = AppConstants.NORMAL_EXIT_STATUS;
         File innerFile = new File(innerFileName);
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(innerFile))) {
             String lineFromFile = bufferedReader.readLine();
             if (!validator.fileIsValid(lineFromFile)) {
                 bufferedReader.close();
-                Main.appComplete(AppConstants.WRONG_INPUT_DATA_EXIT_STATUS);
-             }
+                return AppConstants.WRONG_INPUT_OUTPUT_DATA_EXIT_STATUS;
+            }
             lineFromFile = bufferedReader.readLine();
-            int lineNumber = 2;
+            int lineNumber = AppParseConstants.START_POSITION_FOR_PARSE_LINES_IN_FILE;
+            int wrongLinesCounter = 0;
             while (lineFromFile != null) {
+                output = distributor.lineRecognize(lineFromFile, lineNumber, storage);
+                if (output == AppConstants.ERROR_EXIT_STATUS) {
+                    wrongLinesCounter++;
+                }
                 lineFromFile = bufferedReader.readLine();
                 lineNumber++;
-                output = distributor.lineRecognize(lineFromFile, lineNumber);
             }
+            log.info("The file {} reading complete. Total lines processed number: {}."
+                    + " Total number of lines with read errors: {}.", innerFileName,
+                    lineNumber, wrongLinesCounter);
         } catch (IOException e) {
             log.error("The read from file {} error is occurred! Stacktrace: " + e, innerFileName);
-            Main.appComplete(AppConstants.WRONG_INPUT_DATA_EXIT_STATUS);
+            return AppConstants.WRONG_INPUT_OUTPUT_DATA_EXIT_STATUS;
         }
         return output;
     }

@@ -1,6 +1,7 @@
 package org.analyticaltool.utils.constants;
 
 public class AppParseConstants {
+    public static final int START_POSITION_FOR_PARSE_LINES_IN_FILE = 2;
     public static final String DATA_IN_LINE_DELIMITER = " ";
     public static final String CATEGORIES_DELIMITER = ".";
     public static final String DATE_DELIMITER = "-";

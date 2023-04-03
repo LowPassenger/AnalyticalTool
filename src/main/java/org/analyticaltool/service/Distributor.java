@@ -1,7 +1,5 @@
 package org.analyticaltool.service;
 
-import java.util.HashMap;
-import java.util.Map;
 import org.analyticaltool.utils.Storage;
 import org.analyticaltool.utils.constants.AppConstants;
 import org.analyticaltool.utils.constants.AppErrorConstants;
@@ -12,8 +10,8 @@ import org.apache.logging.log4j.Logger;
 public class Distributor {
     private static final Logger log = LogManager.getLogger(Distributor.class);
     private final Validator validator = new Validator();
-    private final Storage storage = new Storage();
-    public int lineRecognize(String line, int lineCounter) {
+
+    public int lineRecognize(String line, int lineCounter, Storage storage) {
         if (!validator.regexValidation(line)) {
             log.warn(AppErrorConstants.REGEX_VALIDATION_ERROR + lineCounter);
             return AppConstants.ERROR_EXIT_STATUS;
@@ -21,7 +19,8 @@ public class Distributor {
 
         String[] dataForParsing = line.split(AppParseConstants.DATA_IN_LINE_DELIMITER);
         if (dataForParsing.length < AppParseConstants.DATA_BLOCKS_IN_QUERY_QUANTITY
-                | dataForParsing.length > AppParseConstants.DATA_BLOCKS_IN_WAITING_TIMELINE_QUANTITY) {
+                | dataForParsing.length > AppParseConstants
+                .DATA_BLOCKS_IN_WAITING_TIMELINE_QUANTITY) {
             log.warn(AppErrorConstants.DATA_PARSING_ERROR + lineCounter);
             return AppConstants.ERROR_EXIT_STATUS;
         }
@@ -57,7 +56,7 @@ public class Distributor {
 
         if ((dataForParsing.length == AppParseConstants
                 .DATA_BLOCKS_IN_WAITING_TIMELINE_QUANTITY)
-                & !validator.waitingTimeValidation(dataForParsing[AppParseConstants
+                && !validator.waitingTimeValidation(dataForParsing[AppParseConstants
                 .WAITING_TIME_BLOCK])) {
             log.warn(AppErrorConstants.WAITING_TIME_VALIDATION_ERROR + lineCounter);
             return AppConstants.ERROR_EXIT_STATUS;
@@ -67,9 +66,7 @@ public class Distributor {
                 .equals(AppParseConstants.DATA_TYPE_WAITING_TIMELINE)) {
             storage.getWaitingTimeLines().add(dataForParsing);
         } else {
-            Map<String[], Integer> query = new HashMap<>();
-            query.put(dataForParsing, dataForParsing.length);
-            storage.getQueries().add(query);
+            storage.getQueries().put(dataForParsing, storage.getWaitingTimeLines().size());
         }
         return AppConstants.NORMAL_EXIT_STATUS;
     }
