@@ -1,7 +1,7 @@
 # Little file parsing tool
 
 My own opinion for this test task: 
-[https://drive.google.com/file/d/1N9AiKzkf0rJgHWAcdRjQ23QmrUUQm-tm/view?usp=share_link](URL)
+https://drive.google.com/file/d/1N9AiKzkf0rJgHWAcdRjQ23QmrUUQm-tm/view?usp=share_link
 
 And some notes about the code:
 
